@@ -1,4 +1,5 @@
-﻿using Demo.DataModel.Data.Entities.Common;
+﻿using Demo.DataModel.Data.Entities;
+using Demo.DataModel.Data.Entities.Common;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,5 +19,7 @@ namespace Demo.DataModel.Data
         }
 
         public DbSet<Countries> Countries { get; set; }
+
+        public DbSet<States> States { get; set; }
     }
 }
