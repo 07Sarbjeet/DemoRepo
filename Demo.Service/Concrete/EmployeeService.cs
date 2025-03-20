@@ -1,7 +1,9 @@
 ﻿using Demo.DataModel.Data.Entities;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO.Pipes;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -35,13 +37,16 @@ namespace Demo.Service.Concrete
     new Employee { Id = 15, Name = "Jimena", Age = 32, Department = "HR", Salary = 69000 },
     new Employee { Id = 16, Name = "Joel", Age = 40, Department = "Marketing", Salary = 74000 },
     new Employee { Id = 17, Name = "Jeff", Age = 48, Department = "Sales", Salary = 80000 }
+
         };
 
             departments = new List<Department>
         {
             new Department { Name = "HR", Location = "Building A" },
             new Department { Name = "IT", Location = "Building B" },
-            new Department { Name = "Finance", Location = "Building C" }
+            new Department { Name = "Finance", Location = "Building C" },
+            new Department { Name = "Sales", Location = "Building D" },
+            new Department { Name = "Marketing", Location = "Building E" }
         };
 
 
@@ -306,6 +311,152 @@ namespace Demo.Service.Concrete
                           Department = depGroup.Key,
                       });
             return res.ToList();
+        }
+
+        public List<Employee> HightestSalrayInEacheDep()
+        {
+            var res = (from e in employees
+                       group e by e.Department into depGroup
+                       let salary = depGroup.OrderByDescending(s => s.Salary).FirstOrDefault()
+                       select new Employee
+                       {
+                           Department = depGroup.Key,
+                           Salary = salary.Salary
+
+                       }).ToList();
+
+            return res; 
+
+        }
+        public List<EmployeeDepartmentVm> ITAndFinanceSalary()
+        {
+            var res = (from e in employees
+                       join d in departments on e.Department equals d.Name
+                       where (e.Department == "IT" || e.Department == "Finance") && e.Salary > 60000
+                       select new EmployeeDepartmentVm
+                       {
+                            Department = e.Department,
+                            Name = e.Name,
+                            Salary = e.Salary,
+                            Location = d.Location
+
+                       }
+                        ).ToList();
+
+            return res;
+                       
+        }
+
+        public List<EmployeeDepartmentVm> EmployeeAverageSalaryInTheirDep()
+        {
+            var res = (from e in employees
+                       join d in departments on e.Department equals d.Name
+                       let aveSalary = employees.Where(emp => emp.Department == e.Department).Average(s => s.Salary)
+                       where e.Salary > aveSalary
+                       select new EmployeeDepartmentVm
+                       {
+                           Department = e.Department,
+                           Name = e.Name,
+                           Salary = e.Salary,
+                           Location = d.Location
+
+                       }
+                        ).ToList();
+
+            return res;
+
+        }
+
+        public List<Employee> GetDepartmentWithMostEmployees()
+        {
+            var res = employees.GroupBy(emp => emp.Department)
+                      .OrderByDescending(g => g.Count())
+                      .FirstOrDefault();
+
+            return res.ToList();
+        }
+
+        public List<dynamic> GetEmployeeCountByDepartment()
+        {
+            var res = employees.GroupBy(d => d.Department)
+                .Select(g => new 
+                {
+                    departmentName = g.Key,
+                    employeesCount = g.Count()
+                }).Cast<dynamic>().ToList();
+            return res;
+                
+        }
+
+        public List<dynamic> GetTopNSalaryInEveryDepartment(int N)
+        {
+            var res = employees.GroupBy(d => d.Department)
+                .Select(g => new
+                {
+                    Department = g.Key,
+                    topEmployee = g.OrderByDescending(s => s.Salary).Take(N).ToList()
+                }).Cast<dynamic>().ToList();
+            return res;
+        }
+
+        public List<Employee> GetDepartmentWithHighestAverageSalary()
+        {
+            var highestAvgSalaryDepartment = employees.GroupBy(d => d.Department)
+                .Select(g => new Employee
+                {
+                    Department = g.Key,
+                    Salary = g.Average(s => s.Salary)
+                }).OrderByDescending(s => s.Salary).FirstOrDefault();
+
+
+            var res = employees.Join(departments , 
+                e => e.Department,
+                d => d.Name, 
+                (e , d) => new Employee
+                {
+                     Name = e.Name,
+                     Salary = e.Salary,
+                      Department = e.Department,
+                       Age = e.Age,
+                        Id = e.Id,
+                } ) 
+                .Where(e => e.Department == highestAvgSalaryDepartment.Department).ToList();
+
+            return res;
+        }
+
+        public List<Employee> DoubleSalary ()
+        {
+            var res = employees.Select(e => new Employee
+            {
+                Name = e.Name,
+                 Salary = e.Salary * 2
+
+            }).ToList();
+            return res;
+        }
+
+
+        public List<Employee> GetMostCommonSalaryInEachDepartment()
+        {
+            var res = employees.GroupBy(d => d.Department)
+                .Select(g => new Employee 
+                {
+                    Name = g.Key,
+                    Salary = g.GroupBy(s => s.Salary).OrderByDescending(g => g.Count()).FirstOrDefault()?.Key ?? 0,
+                }).ToList();
+            return res;
+             
+        }
+
+
+        public class EmployeeDepartmentVm
+        {
+            public string Name { get; set; }
+            public string Department { get; set; }
+
+            public double Salary { get; set; }
+            public string Location { get; set; }
         }
 
         public class HighEarnerDetailVm

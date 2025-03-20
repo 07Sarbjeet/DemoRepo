@@ -155,5 +155,84 @@ namespace Demo.Controllers
             var res = _employeeService.OverallAverageSalary();
             return Ok(res);
         }
+
+        [Route("HightestSalrayInEacheDep")]
+        [HttpGet]
+
+        public IActionResult HightestSalrayInEacheDep()
+        {
+            var res = _employeeService.HightestSalrayInEacheDep();
+            return Ok(res);
+        }
+
+        [Route("ITAndFinanceSalary")]
+        [HttpGet]
+        public IActionResult ITAndFinanceSalary ()
+        {
+            var res = _employeeService.ITAndFinanceSalary();
+            return Ok(res);
+        }
+
+        [Route("EmployeeAverageSalaryInTheirDep")]
+        [HttpGet]
+        public IActionResult EmployeeAverageSalaryInTheirDep()
+        {
+            var res = _employeeService.EmployeeAverageSalaryInTheirDep();
+            return Ok(res);
+        }
+
+        [Route("GetDepartmentWithMostEmployees")]
+        [HttpGet]
+
+        public IActionResult GetDepartmentWithMostEmployees()
+        {
+            var res = _employeeService.GetDepartmentWithMostEmployees();
+            return Ok(res);
+        }
+
+        [Route("GetEmployeeCountByDepartment")]
+        [HttpGet]
+        public IActionResult GetEmployeeWithMostEmployees()
+        {
+            var res = _employeeService.GetEmployeeCountByDepartment();
+            return Ok(res);
+        }
+
+        [Route("GetTopNSalaryInEveryDepartment")]
+        [HttpGet]
+
+        public IActionResult GetTopNSalaryInEveryDepartment(int N)
+        {
+            var res = _employeeService.GetTopNSalaryInEveryDepartment(N);
+            return Ok(res);
+        }
+
+
+        [Route("GetDepartmentWithHighestAverageSalary")]
+        [HttpGet]
+        public IActionResult GetDepartmentWithHighestAverageSalary()
+        {
+            var res = _employeeService.GetDepartmentWithHighestAverageSalary();
+            return Ok(res);
+        }
+
+
+        [Route("DoubleSalary")]
+
+        [HttpGet]
+
+        public IActionResult DoubleSalary() 
+        { 
+            var res = _employeeService.DoubleSalary();
+            return Ok(res);
+        }
+
+        [Route("GetMostCommonSalaryInEachDepartment")]
+        [HttpGet]
+        public IActionResult GetMostCommonSalaryInEachDepartment()
+        {
+            var res = _employeeService.GetMostCommonSalaryInEachDepartment();
+            return Ok(res);
+        }
     }
 }
